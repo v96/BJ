@@ -12,8 +12,7 @@ package bj.sim;
 public enum Decision {
     HIT,
     STAND,
-    DOUBLEDOWN_OR_HIT,
-    DOUBLEDOWN_OR_STAND,
+    DOUBLEDOWN,
     SPLIT,
     SURRENDER
 }

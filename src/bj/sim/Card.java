@@ -10,7 +10,7 @@ package bj.sim;
  * @author vasil.kuzevski
  */
 public class Card {
-    private int value;
+    final private int value;
 
     public int getValue() {
         return value;

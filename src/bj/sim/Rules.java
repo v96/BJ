@@ -15,32 +15,35 @@ public class Rules {
 
     static {
         LE_GRAND = new Rules();
+        LE_GRAND.hasHoleCard = false;
         LE_GRAND.dealerStandsOnSoft17 = true;
         LE_GRAND.doubleAfterSplitAllowed = true;
+        LE_GRAND.resplitAcesAllowed = false;
+        LE_GRAND.earlySurrender = true;
         LE_GRAND.maxSplitHands = 4;
         LE_GRAND.blackjackPayout = 1.5;
         LE_GRAND.numberOfDecks = 6;
-        LE_GRAND.shufflePoint = 200;
-        LE_GRAND.numberOfBurnedCards = 2;
+        LE_GRAND.shufflePoint = 215;
+        LE_GRAND.numberOfBurnedCards = 5;
     }
-
+    
+    private boolean hasHoleCard;
     private boolean dealerStandsOnSoft17;
     private boolean doubleAfterSplitAllowed;
+    private boolean resplitAcesAllowed;
+    private boolean earlySurrender;
+    private boolean insurance;
     private int maxSplitHands;
     private double blackjackPayout;
     private int numberOfDecks;
     private int shufflePoint;
     private int numberOfBurnedCards;
 
-    public boolean canDoubleDown(Hand hand) {
-        return true;
-    }
-
     public boolean dealerShouldDraw(Hand hand) {
         return hand.getTotal() < 17 || (hand.getTotal() == 17 && hand.isSoft() && !dealerStandsOnSoft17);
     }
     
-    public double getBlackjackPayout() {
+    public double blackjackPayout() {
         return blackjackPayout;
     }
     

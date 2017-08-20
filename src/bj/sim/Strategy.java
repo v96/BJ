@@ -28,7 +28,7 @@ public class Strategy {
             for (int j = 4; j <= 21; j++) {
                 for (int k = 1; k <= 10; k++) {
                     HIT_TO_17.lookup[i][j][k] = (j < 17 ? Decision.HIT : Decision.STAND);
-                    ALWAYS_DOUBLEDOWN.lookup[i][j][k] = Decision.DOUBLEDOWN_OR_STAND;
+                    ALWAYS_DOUBLEDOWN.lookup[i][j][k] = Decision.DOUBLEDOWN;
                     ALWAYS_STAND.lookup[i][j][k] = Decision.STAND;
                     NEVER_BUST.lookup[i][j][k] = (j <= 11 ? Decision.HIT : Decision.STAND);
                 }
