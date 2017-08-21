@@ -20,7 +20,7 @@ public class Rules {
         LE_GRAND.doubleAfterSplitAllowed = true;
         LE_GRAND.resplitAcesAllowed = false;
         LE_GRAND.earlySurrender = true;
-        LE_GRAND.maxSplitHands = 4;
+        LE_GRAND.insuranceOffered = true;
         LE_GRAND.blackjackPayout = 1.5;
         LE_GRAND.numberOfDecks = 6;
         LE_GRAND.shufflePoint = 215;
@@ -32,8 +32,7 @@ public class Rules {
     private boolean doubleAfterSplitAllowed;
     private boolean resplitAcesAllowed;
     private boolean earlySurrender;
-    private boolean insurance;
-    private int maxSplitHands;
+    private boolean insuranceOffered;
     private double blackjackPayout;
     private int numberOfDecks;
     private int shufflePoint;

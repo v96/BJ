@@ -52,7 +52,7 @@ public class Strategy {
     }
 
     public Decision decide(Hand ownHand, Card dealersCard) {
-        if (ownHand.isBlackjack() || ownHand.isBusted()) {
+        if (ownHand.getTotal() == 21 || ownHand.getTotal() == 22) {
             throw new UnsupportedOperationException();
         }
         if (ownHand.isPair()) {
