@@ -13,7 +13,8 @@ public class StrategyStats {
 
     Strategy strategy;
     CardDistribution distribution;
-    private double[][][] hitOrStandEV, hitOrStandVar; //indexed by hard, soft, or pair (0, 1, 2 respectively), own total, and dealer's card
+    private double[][] standEV, standVar; //indexed by own total and dealer's upcard
+    private double[][][] hitOrStandEV, hitOrStandVar; //indexed by hard or soft (0 and 1 resp.), own total, and dealer's card
     private double[][][] handEV, handVar; //indexed by own card #1, own card #2, and dealer's upcard
     private double totalEV, totalVar;
     private double[][][] pDealer; //what is the probability of a dealer getting a certain total given his current total? 0 = hard, 1 = soft, 22 = bust
@@ -26,7 +27,7 @@ public class StrategyStats {
         return totalVar;
     }
 
-    private double calculatePDealerSingleField(int soft, int curr, int target, CardDistribution distribution) {
+    private double calculatePDealerSingleField(int soft, int curr, int target) {
         if (soft < 0 || soft > 1 || curr < 2 || curr > 22 || target < 2 || target > 22) {
             throw new IndexOutOfBoundsException();
         }
@@ -46,16 +47,16 @@ public class StrategyStats {
             pDealer[soft][curr][target] = 0;
             return pDealer[soft][curr][target];
         }
-        double pdealer = 0;
+        double pd = 0;
         for (int i = 1; i <= 10; i++) {
             Hand newHand = new Hand(new Hand(curr, (soft == 1)), new Card(i));
-            pdealer += distribution.pCard(new Card(i)) * calculatePDealerSingleField(newHand.isSoft() ? 1 : 0, newHand.getTotal(), target, distribution);
+            pd += distribution.pCard(new Card(i)) * calculatePDealerSingleField(newHand.isSoft() ? 1 : 0, newHand.getTotal(), target);
         }
-        pDealer[soft][curr][target] = pdealer;
+        pDealer[soft][curr][target] = pd;
         return pDealer[soft][curr][target];
     }
 
-    private double[][][] calculatePDealer(CardDistribution distribution) {
+    private void calculatePDealer() {
         pDealer = new double[2][23][23];
 
         for (int i = 0; i < 2; i++) {
@@ -67,36 +68,89 @@ public class StrategyStats {
         }
         for (int j = 2; j <= 22; j++) {
             for (int k = 17; k <= 22; k++) {
-                calculatePDealerSingleField(0, j, k, distribution);
+                calculatePDealerSingleField(0, j, k);
             }
         }
         for (int j = 11; j <= 22; j++) {
             for (int k = 17; k <= 22; k++) {
-                calculatePDealerSingleField(1, j, k, distribution);
+                calculatePDealerSingleField(1, j, k);
+            }
+        }
+    }
+
+    private void calculateStandEV() {
+        standEV = new double[23][11];
+
+        for (int i = 4; i <= 22; i++) {
+            for (int j = 1; j <= 10; j++) {
+                Hand dealerHand = new Hand(new Card(j));
+                standEV[i][j] = 0;
+                for (int m = 17; m <= 22; m++) {
+                    if (i == 22 || m > i) {
+                        standEV[i][j] += -1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
+                    } else if (i > m || m == 22) {
+                        standEV[i][j] += 1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
+                    }
+                }
+            }
+        }
+    }
+
+    private double calculateHitOrStandEVSingleField(int soft, int total, Card dealersCard) {
+        if (hitOrStandEV[soft][total][dealersCard.getValue()] != 0) {
+            return hitOrStandEV[soft][total][dealersCard.getValue()];
+        }
+
+        switch (strategy.decideHitOrStand(new Hand(total, (soft == 1)), dealersCard)) {
+            case HIT:
+                for (int i = 1; i <= 10; i++) {
+                    Card newCard = new Card(i);
+                    Hand newHand = new Hand(new Hand(total, (soft == 1)), newCard);
+                    hitOrStandEV[soft][total][dealersCard.getValue()] += calculateHitOrStandEVSingleField(newHand.isSoft() ? 1 : 0, newHand.getTotal(), dealersCard) * distribution.pCard(newCard);
+                }
+                break;
+            case STAND:
+                hitOrStandEV[soft][total][dealersCard.getValue()] = standEV[total][dealersCard.getValue()];
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+        return hitOrStandEV[soft][total][dealersCard.getValue()];
+    }
+
+    private void calculateHitOrStandEV() {
+        hitOrStandEV = new double[2][23][11];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 23; j++) {
+                for (int k = 0; k < 11; k++) {
+                    hitOrStandEV[i][j][k] = 0;
+                }
             }
         }
 
-        return pDealer;
+        for (int i = 4; i <= 22; i++) { //hard hands
+            for (int j = 1; j <= 10; j++) {
+                calculateHitOrStandEVSingleField(0, i, new Card(j));
+            }
+        }
+        for (int i = 11; i <= 21; i++) { //soft hands
+            for (int j = 1; j <= 10; j++) {
+                calculateHitOrStandEVSingleField(1, i, new Card(j));
+            }
+        }
     }
 
-    private void calculateHandEV(double[][][] pDealer, CardDistribution distribution) {
+    private void calculateHandEV() {
+        handEV = new double[11][11][11];
+
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 for (int k = 1; k <= 10; k++) {
                     Hand ownHand = new Hand(new Hand(new Card(i)), new Card(j));
                     Card dealerCard = new Card(k);
-                    Hand dealerHand = new Hand(dealerCard);
-                    Decision decision = strategy.decide(ownHand, dealerCard);
-                    switch (decision) {
+                    switch (strategy.decideInitialHand(new Card(i), new Card(j), dealerCard)) {
                         case STAND:
-                            handEV[i][j][k] = 0;
-                            for (int m = 17; m <= 22; m++) {
-                                if (ownHand.getTotal() == 22 || m > ownHand.getTotal()) {
-                                    handEV[i][j][k] += -1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
-                                } else if (ownHand.getTotal() > m || m == 22) {
-                                    handEV[i][j][k] += 1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
-                                }
-                            }
+                            handEV[i][j][k] = standEV[ownHand.getTotal()][k];
                             break;
                         case HIT:
                             handEV[i][j][k] = 0;
@@ -111,13 +165,7 @@ public class StrategyStats {
                             for (int l = 1; l <= 10; l++) {
                                 Card newCard = new Card(l);
                                 Hand newHand = new Hand(ownHand, newCard);
-                                for (int m = 17; m <= 22; m++) {
-                                    if (ownHand.getTotal() == 22 || m > ownHand.getTotal()) {
-                                        handEV[i][j][k] += -2.0 * distribution.pCard(newCard) * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
-                                    } else if (ownHand.getTotal() > m || m == 22) {
-                                        handEV[i][j][k] += 2.0 * distribution.pCard(newCard) * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
-                                    }
-                                }
+                                handEV[i][j][k] += standEV[newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
                             }
                             break;
                         case SURRENDER:
@@ -130,6 +178,20 @@ public class StrategyStats {
                             handEV[i][j][k] = 0;
                             if (i == 1) { //special case for splitting aces
                                 //assuming that resplitting aces is not allowed
+                                for (int l = 1; l <= 10; l++) {
+                                    for (int n = 1; n <= 10; n++) {
+                                        Hand[] newHand = new Hand[2];
+                                        Card[] newCard = new Card[2];
+                                        newCard[0] = new Card(l);
+                                        newCard[1] = new Card(n);
+                                        newHand[0] = new Hand(new Hand(new Card(i)), newCard[0]);
+                                        newHand[1] = new Hand(new Hand(new Card(j)), newCard[1]);
+
+                                        handEV[i][j][k] += (standEV[newHand[0].getTotal()][dealerCard.getValue()]
+                                                + standEV[newHand[1].getTotal()][dealerCard.getValue()]) * distribution.pCard(newCard[0])
+                                                * distribution.pCard(newCard[1]);
+                                    }
+                                }
                             } else {
                                 for (int l = 1; l <= 10; l++) {
                                     for (int n = 1; n <= 10; n++) {
@@ -139,10 +201,10 @@ public class StrategyStats {
                                         newCard[1] = new Card(n);
                                         newHand[0] = new Hand(new Hand(new Card(i)), newCard[0]);
                                         newHand[1] = new Hand(new Hand(new Card(j)), newCard[1]);
-                                        
-                                        handEV[i][j][k] += (hitOrStandEV[newHand[0].isSoft() ? 1 : 0][newHand[0].getTotal()][dealerCard.getValue()] + 
-                                                            hitOrStandEV[newHand[1].isSoft() ? 1 : 0][newHand[1].getTotal()][dealerCard.getValue()]) * distribution.pCard(newCard[0]) *
-                                                                                                                                                       distribution.pCard(newCard[1]);
+
+                                        handEV[i][j][k] += (hitOrStandEV[newHand[0].isSoft() ? 1 : 0][newHand[0].getTotal()][dealerCard.getValue()]
+                                                + hitOrStandEV[newHand[1].isSoft() ? 1 : 0][newHand[1].getTotal()][dealerCard.getValue()]) * distribution.pCard(newCard[0])
+                                                * distribution.pCard(newCard[1]);
                                     }
                                 }
                             }
@@ -153,50 +215,16 @@ public class StrategyStats {
         }
     }
 
-    /*
-    private double[][][] calculateEVStand(double[][][] pDealer) {
-        double[][][] EVStand = new double[2][23][12];
-
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 23; j++) {
-                for (int k = 0; k < 12; k++) {
-                    EVStand[i][j][k] = 0;
-                }
-            }
-        }
-        for (int i = 1; i <= 10; i++) {
-            for (int j = 1; j <= 10; j++) {
-                for (int k = 1; k <= 10; k++) {
-                    for (int l = 1; l <= 10; l++) {
-                        Hand own = new Hand(new Hand(new Hand(new Card(i)), new Card(j)), new Card(l));
-                        Hand dealer = new Hand(new Card(k));
-                        if (EVStand[own.isSoft() ? 1 : 0][own.getTotal()][dealer.getTotal()] == 0) {
-                            for (int m = 17; m <= 22; m++) {
-                                if (own.getTotal() != 22 && (own.getTotal() > m || m == 22)) {
-                                    EVStand[own.isSoft() ? 1 : 0][own.getTotal()][dealer.getTotal()] += 1.0 * pDealer[dealer.isSoft() ? 1 : 0][dealer.getTotal()][m];
-                                } else if (own.getTotal() == 22 || m > own.getTotal()) {
-                                    EVStand[own.isSoft() ? 1 : 0][own.getTotal()][dealer.getTotal()] += -1.0 * pDealer[dealer.isSoft() ? 1 : 0][dealer.getTotal()][m];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return EVStand;
-    }
-     */
     StrategyStats(Strategy strategy, CardDistribution distribution, Rules rules) {
         this.strategy = strategy;
         this.distribution = distribution;
 
-        pDealer = calculatePDealer(distribution);
-        calculateHandEV(pDealer, distribution);
+        calculatePDealer();
+        calculateStandEV();
+        calculateHitOrStandEV();
+        calculateHandEV();
 
         /*
-        double[][][] EVStand = calculateEVStand(pDealer);
-
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j <= 11; j++) {
                 System.out.print(j + " ");

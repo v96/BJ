@@ -70,7 +70,7 @@ public class Hand {
     }
 
     Hand(int total, boolean isSoft) {
-        if (isSoft && total < 11) {
+        if (isSoft && (total < 11 || total > 21)) {
             throw new IllegalArgumentException();
         }
         this.isSoft = isSoft;
