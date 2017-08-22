@@ -5,6 +5,8 @@
  */
 package bj.sim;
 
+import java.text.DecimalFormat;
+
 /**
  *
  * @author Vasil
@@ -49,7 +51,7 @@ public class StrategyStats {
         }
         double pd = 0;
         for (int i = 1; i <= 10; i++) {
-            Hand newHand = new Hand(new Hand(curr, (soft == 1)), new Card(i));
+            Hand_2 newHand = new Hand_2(new Hand_2(curr, (soft == 1)), new Card(i));
             pd += distribution.pCard(new Card(i)) * calculatePDealerSingleField(newHand.isSoft() ? 1 : 0, newHand.getTotal(), target);
         }
         pDealer[soft][curr][target] = pd;
@@ -83,10 +85,10 @@ public class StrategyStats {
 
         for (int i = 4; i <= 22; i++) {
             for (int j = 1; j <= 10; j++) {
-                Hand dealerHand = new Hand(new Card(j));
+                Hand_2 dealerHand = new Hand_2(new Card(j));
                 standEV[i][j] = 0;
                 for (int m = 17; m <= 22; m++) {
-                    if (i == 22 || m > i) {
+                    if (i == 22 || (m > i && m < 22)) {
                         standEV[i][j] += -1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
                     } else if (i > m || m == 22) {
                         standEV[i][j] += 1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
@@ -100,12 +102,15 @@ public class StrategyStats {
         if (hitOrStandEV[soft][total][dealersCard.getValue()] != 0) {
             return hitOrStandEV[soft][total][dealersCard.getValue()];
         }
-
-        switch (strategy.decideHitOrStand(new Hand(total, (soft == 1)), dealersCard)) {
+        if(total == 22) {
+            hitOrStandEV[soft][total][dealersCard.getValue()] = -1;
+            return hitOrStandEV[soft][total][dealersCard.getValue()];
+        }
+        switch (strategy.decideHitOrStand(new Hand_2(total, (soft == 1)), dealersCard)) {
             case HIT:
                 for (int i = 1; i <= 10; i++) {
                     Card newCard = new Card(i);
-                    Hand newHand = new Hand(new Hand(total, (soft == 1)), newCard);
+                    Hand_2 newHand = new Hand_2(new Hand_2(total, (soft == 1)), newCard);
                     hitOrStandEV[soft][total][dealersCard.getValue()] += calculateHitOrStandEVSingleField(newHand.isSoft() ? 1 : 0, newHand.getTotal(), dealersCard) * distribution.pCard(newCard);
                 }
                 break;
@@ -146,7 +151,7 @@ public class StrategyStats {
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
                 for (int k = 1; k <= 10; k++) {
-                    Hand ownHand = new Hand(new Hand(new Card(i)), new Card(j));
+                    Hand_2 ownHand = new Hand_2(new Hand_2(new Card(i)), new Card(j));
                     Card dealerCard = new Card(k);
                     switch (strategy.decideInitialHand(new Card(i), new Card(j), dealerCard)) {
                         case STAND:
@@ -156,7 +161,7 @@ public class StrategyStats {
                             handEV[i][j][k] = 0;
                             for (int l = 1; l <= 10; l++) {
                                 Card newCard = new Card(l);
-                                Hand newHand = new Hand(ownHand, newCard);
+                                Hand_2 newHand = new Hand_2(ownHand, newCard);
                                 handEV[i][j][k] += hitOrStandEV[newHand.isSoft() ? 1 : 0][newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
                             }
                             break;
@@ -164,8 +169,8 @@ public class StrategyStats {
                             handEV[i][j][k] = 0;
                             for (int l = 1; l <= 10; l++) {
                                 Card newCard = new Card(l);
-                                Hand newHand = new Hand(ownHand, newCard);
-                                handEV[i][j][k] += standEV[newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
+                                Hand_2 newHand = new Hand_2(ownHand, newCard);
+                                handEV[i][j][k] += 2 * standEV[newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
                             }
                             break;
                         case SURRENDER:
@@ -180,12 +185,12 @@ public class StrategyStats {
                                 //assuming that resplitting aces is not allowed
                                 for (int l = 1; l <= 10; l++) {
                                     for (int n = 1; n <= 10; n++) {
-                                        Hand[] newHand = new Hand[2];
+                                        Hand_2[] newHand = new Hand_2[2];
                                         Card[] newCard = new Card[2];
                                         newCard[0] = new Card(l);
                                         newCard[1] = new Card(n);
-                                        newHand[0] = new Hand(new Hand(new Card(i)), newCard[0]);
-                                        newHand[1] = new Hand(new Hand(new Card(j)), newCard[1]);
+                                        newHand[0] = new Hand_2(new Hand_2(new Card(i)), newCard[0]);
+                                        newHand[1] = new Hand_2(new Hand_2(new Card(j)), newCard[1]);
 
                                         handEV[i][j][k] += (standEV[newHand[0].getTotal()][dealerCard.getValue()]
                                                 + standEV[newHand[1].getTotal()][dealerCard.getValue()]) * distribution.pCard(newCard[0])
@@ -195,12 +200,12 @@ public class StrategyStats {
                             } else {
                                 for (int l = 1; l <= 10; l++) {
                                     for (int n = 1; n <= 10; n++) {
-                                        Hand[] newHand = new Hand[2];
+                                        Hand_2[] newHand = new Hand_2[2];
                                         Card[] newCard = new Card[2];
                                         newCard[0] = new Card(l);
                                         newCard[1] = new Card(n);
-                                        newHand[0] = new Hand(new Hand(new Card(i)), newCard[0]);
-                                        newHand[1] = new Hand(new Hand(new Card(j)), newCard[1]);
+                                        newHand[0] = new Hand_2(new Hand_2(new Card(i)), newCard[0]);
+                                        newHand[1] = new Hand_2(new Hand_2(new Card(j)), newCard[1]);
 
                                         handEV[i][j][k] += (hitOrStandEV[newHand[0].isSoft() ? 1 : 0][newHand[0].getTotal()][dealerCard.getValue()]
                                                 + hitOrStandEV[newHand[1].isSoft() ? 1 : 0][newHand[1].getTotal()][dealerCard.getValue()]) * distribution.pCard(newCard[0])
@@ -225,6 +230,16 @@ public class StrategyStats {
             }
         }
     }
+    
+    private void calculateTotalEV() {
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                for (int k = 1; k <= 10; k++) {
+                    totalEV += handEV[i][j][k] * distribution.pCard(new Card(i)) * distribution.pCard(new Card(j)) * distribution.pCard(new Card(k));
+                }
+            }
+        }
+    }
 
     StrategyStats(Strategy strategy, CardDistribution distribution, Rules rules) {
         this.strategy = strategy;
@@ -235,7 +250,36 @@ public class StrategyStats {
         calculateHitOrStandEV();
         calculateHandEV();
         calculateTotalEV();
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(3);
+        /*
+        System.out.print("     ");
+        for (int i = 1; i <= 10; i++) {
+            System.out.print(i + "      ");
+        }
+        System.out.println();
+        for (int j = 1; j <= 10; j++) {
+            for (int k = 1; k <= 10; k++) {
+                System.out.print(j + " " + k + ": ");
+                for(int i=1; i<=10; i++) {
+                    System.out.print(df.format(handEV[j][k][i]) + " ");
+                }
+                System.out.println();
+            }
+        }
         
+        System.out.println();
+        System.out.println();
+        */
+        /*
+        for(int i=4; i<=22; i++) {
+            for(int j=1; j<=10; j++) {
+                System.out.print(df.format(standEV[i][j]) + " ");
+            }
+            System.out.println();
+        }
+        */
         /*
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j <= 11; j++) {

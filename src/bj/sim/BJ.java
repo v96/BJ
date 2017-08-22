@@ -14,12 +14,25 @@ public class BJ {
     /**
      * @param args the command line arguments
      */
+    
+    public static calculateEV(PlayerHand player, Hand dealer) {
+        
+    }
+    
 
     public static void main(String[] args) {
+        StrategyStats hit17 = new StrategyStats(Strategy.HIT_TO_17, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats alwaysStand = new StrategyStats(Strategy.ALWAYS_STAND, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats alwaysDD = new StrategyStats(Strategy.ALWAYS_DOUBLEDOWN, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats neverBust18 = new StrategyStats(Strategy.NEVER_BUST_18, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
         
-        StrategyStats strsts = new StrategyStats(Strategy.ALWAYS_STAND, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
-        System.out.println(strsts.getTotalEV());
-        
+        Strategy optimal = Strategy.generateOptimalStrategy(CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        optimal.printStrategy();
+        System.out.println((new StrategyStats(optimal, CardDistribution.INFINITE_DECK, Rules.LE_GRAND)).getTotalEV());
+        System.out.println(hit17.getTotalEV());
+        System.out.println(alwaysStand.getTotalEV());
+        System.out.println(alwaysDD.getTotalEV());
+        System.out.println(neverBust18.getTotalEV());
     }
 
 }

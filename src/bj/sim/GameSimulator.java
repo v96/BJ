@@ -127,15 +127,15 @@ public class GameSimulator {
         while (bankroll > 0 && bankroll < goal && handsPlayed < maxHands) {
             int betSize = bettingSystem.getBetSize(bankroll, counter);
             
-            Hand dealersHand;
-            Hand[] playersHands = new Hand[numberOfPlayers];
+            Hand_2 dealersHand;
+            Hand_2[] playersHands = new Hand_2[numberOfPlayers];
             
             c = nextCard();
-            dealersHand = new Hand(c);
+            dealersHand = new Hand_2(c);
             counter.count(c);    
             for(int i=0; i<numberOfPlayers; i++) {
                 c = nextCard();
-                playersHands[i] = new Hand(c);
+                playersHands[i] = new Hand_2(c);
                 counter.count(c);
             }
             for(int i=0; i<numberOfPlayers; i++) {

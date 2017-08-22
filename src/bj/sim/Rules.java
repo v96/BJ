@@ -38,7 +38,7 @@ public class Rules {
     private int shufflePoint;
     private int numberOfBurnedCards;
 
-    public boolean dealerShouldDraw(Hand hand) {
+    public boolean dealerShouldDraw(Hand_2 hand) {
         return hand.getTotal() < 17 || (hand.getTotal() == 17 && hand.isSoft() && !dealerStandsOnSoft17);
     }
     
