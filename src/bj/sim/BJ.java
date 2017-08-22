@@ -5,8 +5,6 @@
  */
 package bj.sim;
 
-import java.util.Scanner;
-
 /**
  *
  * @author vasil.kuzevski
@@ -18,10 +16,10 @@ public class BJ {
      */
 
     public static void main(String[] args) {
-        System.out.println();
-        Hand hand = new Hand(5, false);
         
-        StrategyStats strsts = new StrategyStats(Strategy.HIT_TO_17, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats strsts = new StrategyStats(Strategy.ALWAYS_STAND, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        System.out.println(strsts.getTotalEV());
+        
     }
 
 }
