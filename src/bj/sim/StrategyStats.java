@@ -170,7 +170,7 @@ public class StrategyStats {
                             for (int l = 1; l <= 10; l++) {
                                 Card newCard = new Card(l);
                                 Hand newHand = new Hand(ownHand, newCard);
-                                handEV[i][j][k] += standEV[newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
+                                handEV[i][j][k] += 2 * standEV[newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
                             }
                             break;
                         case SURRENDER:

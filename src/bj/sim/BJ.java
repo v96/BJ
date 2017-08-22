@@ -25,7 +25,7 @@ public class BJ {
         
         Strategy optimal = Strategy.generateOptimalStrategy(CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
         optimal.printStrategy();
-        
+        System.out.println((new StrategyStats(optimal, CardDistribution.INFINITE_DECK, Rules.LE_GRAND)).getTotalEV());
         System.out.println(hit17.getTotalEV());
         System.out.println(alwaysStand.getTotalEV());
         System.out.println(alwaysDD.getTotalEV());

@@ -147,13 +147,26 @@ public class Strategy {
         System.out.println();
         System.out.println("Hit or stand for soft totals:");
         for (int i = 22; i >= 11; i--) {
-            System.out.print("A " + (i - 11) + ": ");
+            System.out.print(i + ": ");
             for (int j = 1; j <= 10; j++) {
                 System.out.print((hitOrStand[1][i][j] == Decision.HIT ? "H" : "S") + " ");
             }
             System.out.println();
         }
         System.out.println();
+        System.out.println("Decisions for each hand:");
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                System.out.print(i + " " + j + ": ");
+                for (int k = 2; k <= 10; k++) {
+                    System.out.print((iniHand[i][j][k] == Decision.HIT ? "H" : iniHand[i][j][k] == Decision.STAND ? "S"
+                            : iniHand[i][j][k] == Decision.DOUBLEDOWN ? "Dd" : iniHand[i][j][k] == Decision.SPLIT ? "Sp" : "Sr") + " ");
+                }
+                System.out.print((iniHand[i][j][1] == Decision.HIT ? "H" : iniHand[i][j][1] == Decision.STAND ? "S"
+                            : iniHand[i][j][1] == Decision.DOUBLEDOWN ? "Dd" : iniHand[i][j][1] == Decision.SPLIT ? "Sp" : "Sr") + " ");
+                System.out.println();
+            }
+        }
     }
 
     Strategy(Strategy base) {
