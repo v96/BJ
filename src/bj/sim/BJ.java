@@ -18,10 +18,18 @@ public class BJ {
      */
 
     public static void main(String[] args) {
-        System.out.println();
-        Hand hand = new Hand(5, false);
+        StrategyStats hit17 = new StrategyStats(Strategy.HIT_TO_17, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats alwaysStand = new StrategyStats(Strategy.ALWAYS_STAND, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats alwaysDD = new StrategyStats(Strategy.ALWAYS_DOUBLEDOWN, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        StrategyStats neverBust18 = new StrategyStats(Strategy.NEVER_BUST_18, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
         
-        StrategyStats strsts = new StrategyStats(Strategy.HIT_TO_17, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        Strategy optimal = Strategy.generateOptimalStrategy(CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
+        optimal.printStrategy();
+        
+        System.out.println(hit17.getTotalEV());
+        System.out.println(alwaysStand.getTotalEV());
+        System.out.println(alwaysDD.getTotalEV());
+        System.out.println(neverBust18.getTotalEV());
     }
 
 }

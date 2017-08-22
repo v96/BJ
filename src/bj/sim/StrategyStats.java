@@ -5,6 +5,8 @@
  */
 package bj.sim;
 
+import java.text.DecimalFormat;
+
 /**
  *
  * @author Vasil
@@ -86,7 +88,7 @@ public class StrategyStats {
                 Hand dealerHand = new Hand(new Card(j));
                 standEV[i][j] = 0;
                 for (int m = 17; m <= 22; m++) {
-                    if (i == 22 || m > i) {
+                    if (i == 22 || (m > i && m < 22)) {
                         standEV[i][j] += -1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
                     } else if (i > m || m == 22) {
                         standEV[i][j] += 1.0 * pDealer[dealerHand.isSoft() ? 1 : 0][dealerHand.getTotal()][m];
@@ -100,7 +102,10 @@ public class StrategyStats {
         if (hitOrStandEV[soft][total][dealersCard.getValue()] != 0) {
             return hitOrStandEV[soft][total][dealersCard.getValue()];
         }
-
+        if(total == 22) {
+            hitOrStandEV[soft][total][dealersCard.getValue()] = -1;
+            return hitOrStandEV[soft][total][dealersCard.getValue()];
+        }
         switch (strategy.decideHitOrStand(new Hand(total, (soft == 1)), dealersCard)) {
             case HIT:
                 for (int i = 1; i <= 10; i++) {
@@ -215,6 +220,16 @@ public class StrategyStats {
         }
     }
 
+    private void calculateTotalEV() {
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                for (int k = 1; k <= 10; k++) {
+                    totalEV += handEV[i][j][k] * distribution.pCard(new Card(i)) * distribution.pCard(new Card(j)) * distribution.pCard(new Card(k));
+                }
+            }
+        }
+    }
+
     StrategyStats(Strategy strategy, CardDistribution distribution, Rules rules) {
         this.strategy = strategy;
         this.distribution = distribution;
@@ -223,7 +238,37 @@ public class StrategyStats {
         calculateStandEV();
         calculateHitOrStandEV();
         calculateHandEV();
+        calculateTotalEV();
 
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(3);
+        /*
+        System.out.print("     ");
+        for (int i = 1; i <= 10; i++) {
+            System.out.print(i + "      ");
+        }
+        System.out.println();
+        for (int j = 1; j <= 10; j++) {
+            for (int k = 1; k <= 10; k++) {
+                System.out.print(j + " " + k + ": ");
+                for(int i=1; i<=10; i++) {
+                    System.out.print(df.format(handEV[j][k][i]) + " ");
+                }
+                System.out.println();
+            }
+        }
+        
+        System.out.println();
+        System.out.println();
+        */
+        /*
+        for(int i=4; i<=22; i++) {
+            for(int j=1; j<=10; j++) {
+                System.out.print(df.format(standEV[i][j]) + " ");
+            }
+            System.out.println();
+        }
+        */
         /*
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j <= 11; j++) {
