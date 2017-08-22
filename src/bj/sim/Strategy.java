@@ -43,11 +43,11 @@ public class Strategy {
                 }
             }
         }
-        for (int i = 0; i <= 2; i++) {
+        for (int i = 0; i < 2; i++) {
             for (int j = 4; j <= 22; j++) {
                 for (int k = 1; k <= 10; k++) {
-                    HIT_TO_17.hitOrStand[i][j][k] = (j >= 17 ? Decision.STAND : Decision.SPLIT);
-                    ALWAYS_DOUBLEDOWN.hitOrStand[i][j][k] = Decision.DOUBLEDOWN;
+                    HIT_TO_17.hitOrStand[i][j][k] = (j >= 17 ? Decision.STAND : Decision.HIT);
+                    ALWAYS_DOUBLEDOWN.hitOrStand[i][j][k] = Decision.STAND;
                     ALWAYS_STAND.hitOrStand[i][j][k] = Decision.STAND;
                     NEVER_BUST_18.hitOrStand[i][j][k] = (i == 1 ? (j >= 18 ? Decision.STAND : Decision.HIT) : (j >= 12 ? Decision.STAND : Decision.HIT));
                 }

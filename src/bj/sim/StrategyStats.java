@@ -10,7 +10,7 @@ package bj.sim;
  * @author Vasil
  */
 public class StrategyStats {
-
+    
     Strategy strategy;
     CardDistribution distribution;
     private double[][] standEV, standVar; //indexed by own total and dealer's upcard
@@ -214,6 +214,17 @@ public class StrategyStats {
             }
         }
     }
+    
+    private void calculateTotalEV() {
+        totalEV = 0;
+        for(int i=1; i<=10; i++) {
+            for(int j=1; j<=10; j++) {
+                for(int k=1; k<=10; k++) {
+                    totalEV += handEV[i][j][k] * distribution.pCard(new Card(i)) * distribution.pCard(new Card(j)) * distribution.pCard(new Card(k));
+                }
+            }
+        }
+    }
 
     StrategyStats(Strategy strategy, CardDistribution distribution, Rules rules) {
         this.strategy = strategy;
@@ -223,7 +234,8 @@ public class StrategyStats {
         calculateStandEV();
         calculateHitOrStandEV();
         calculateHandEV();
-
+        calculateTotalEV();
+        
         /*
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j <= 11; j++) {
