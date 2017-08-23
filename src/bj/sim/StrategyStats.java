@@ -5,6 +5,7 @@
  */
 package bj.sim;
 
+import bj.sim.hands.Hand;
 import java.text.DecimalFormat;
 
 /**
@@ -106,7 +107,7 @@ public class StrategyStats {
             hitOrStandEV[soft][total][dealersCard.getValue()] = -1;
             return hitOrStandEV[soft][total][dealersCard.getValue()];
         }
-        switch (strategy.decideHitOrStand(new Hand_2(total, (soft == 1)), dealersCard)) {
+        switch (strategy.decideHitOrStand(new Hand(total, (soft == 1)), dealersCard)) {
             case HIT:
                 for (int i = 1; i <= 10; i++) {
                     Card newCard = new Card(i);
@@ -169,7 +170,7 @@ public class StrategyStats {
                             handEV[i][j][k] = 0;
                             for (int l = 1; l <= 10; l++) {
                                 Card newCard = new Card(l);
-                                Hand_2 newHand = new Hand_2(ownHand, newCard);
+                                Hand newHand = new Hand(ownHand, newCard);
                                 handEV[i][j][k] += 2 * standEV[newHand.getTotal()][dealerCard.getValue()] * distribution.pCard(newCard);
                             }
                             break;
@@ -231,6 +232,16 @@ public class StrategyStats {
         }
     }
     
+    private void calculateTotalEV() {
+        for (int i = 1; i <= 10; i++) {
+            for (int j = 1; j <= 10; j++) {
+                for (int k = 1; k <= 10; k++) {
+                    totalEV += handEV[i][j][k] * distribution.pCard(new Card(i)) * distribution.pCard(new Card(j)) * distribution.pCard(new Card(k));
+                }
+            }
+        }
+    }
+
     private void calculateTotalEV() {
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {

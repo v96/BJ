@@ -7,13 +7,12 @@ package bj.sim;
 
 /**
  *
- * @author Vasil
+ * @author vasil.kuzevski
  */
 public enum Action {
     HIT,
     STAND,
+    SURRENDER,
     DOUBLEDOWN,
-    SPLIT_1,
-    SPLIT_2,
-    SURRENDER
+    SPLIT
 }

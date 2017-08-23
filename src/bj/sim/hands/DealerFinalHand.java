@@ -3,25 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bj.sim;
+package bj.sim.hands;
+
+import bj.sim.Action;
+import bj.sim.Rules;
 
 /**
  *
- * @author Vasil
+ * @author vasil.kuzevski
  */
-public abstract class PlayerFinalHand extends PlayerHand {
+public abstract class DealerFinalHand extends DealerHand {
     
     public Action[] availableActions() {
-        return new Action[0];
+        Action[] avail = new Action[0];
+        return avail;
     }
     
     public Hand applyAction(Action action, int card) {
         throw new IllegalArgumentException();
     }
     
-    public abstract double compareAgainstDealer(DealerFinalHand dealer);
-    
-    protected PlayerFinalHand(Rules rules) {
+    protected DealerFinalHand(Rules rules) {
         super(rules);
     }
 }

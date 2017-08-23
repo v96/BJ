@@ -3,15 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bj.sim;
+package bj.sim.hands;
+
+import bj.sim.Rules;
 
 /**
  *
- * @author Vasil
+ * @author vasil.kuzevski
  */
-public abstract class PlayerHand extends Hand {
+public abstract class DealerHand extends Hand {
     
-    PlayerHand(Rules rules) {
+    protected DealerHand(Rules rules) {
         super(rules);
-    }   
+    }
 }

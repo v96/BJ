@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bj.sim;
+package bj.sim.hands;
+
+import bj.sim.Action;
+import bj.sim.Rules;
 
 /**
  *
- * @author Vasil
+ * @author vasil.kuzevski
  */
-public class PlayerInitialEmptyHand extends PlayerHand {
+public class PlayerEmpty extends PlayerHand {
 
     public Action[] availableActions() {
         Action[] avail = new Action[1];
@@ -21,13 +24,24 @@ public class PlayerInitialEmptyHand extends PlayerHand {
         switch (action) {
             case HIT:
                 checkCard(card);
-                return new PlayerInitialOneCardHand(this.getRules(), 1);
+                return new PlayerSingleCard(getRules(), card);
             default:
                 throw new IllegalArgumentException();
         }
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof PlayerEmpty;
+    }
 
-    PlayerInitialEmptyHand(Rules rules) {
+    @Override
+    public int hashCode() {
+        return 333356883;
+    }
+
+    public PlayerEmpty(Rules rules) {
         super(rules);
     }
+
 }
