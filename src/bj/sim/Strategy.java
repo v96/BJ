@@ -61,10 +61,10 @@ public class Strategy {
         for (int i = 22; i >= 4; i--) {
             for (int j = 1; j <= 10; j++) {
                 Strategy optimalHit = new Strategy(optimal);
-                optimalHit.setHitOrStandDecision(false, i, new Card(j), Decision.HIT);
+                optimalHit.setHitOrStandDecision(0, i, new Card(j), Decision.HIT);
                 double hitEV = (new StrategyStats(optimalHit, distribution, rules)).getTotalEV();
                 Strategy optimalStand = new Strategy(optimal);
-                optimalStand.setHitOrStandDecision(false, i, new Card(j), Decision.STAND);
+                optimalStand.setHitOrStandDecision(0, i, new Card(j), Decision.STAND);
                 double standEV = (new StrategyStats(optimalStand, distribution, rules)).getTotalEV();
 
                 if (hitEV > standEV) {
@@ -77,10 +77,10 @@ public class Strategy {
         for (int i = 22; i >= 11; i--) {
             for (int j = 1; j <= 10; j++) {
                 Strategy optimalHit = new Strategy(optimal);
-                optimalHit.setHitOrStandDecision(true, i, new Card(j), Decision.HIT);
+                optimalHit.setHitOrStandDecision(1, i, new Card(j), Decision.HIT);
                 double hitEV = (new StrategyStats(optimalHit, distribution, rules)).getTotalEV();
                 Strategy optimalStand = new Strategy(optimal);
-                optimalStand.setHitOrStandDecision(true, i, new Card(j), Decision.STAND);
+                optimalStand.setHitOrStandDecision(1, i, new Card(j), Decision.STAND);
                 double standEV = (new StrategyStats(optimalStand, distribution, rules)).getTotalEV();
 
                 if (hitEV > standEV) {
@@ -124,11 +124,11 @@ public class Strategy {
         return hitOrStand[ownHand.isSoft() ? 1 : 0][ownHand.getTotal()][dealersCard.getValue()];
     }
 
-    public void setHitOrStandDecision(boolean soft, int total, Card dealersCard, Decision decision) {
-        if (soft && total < 11 || total < 4 || total > 22 || !(decision.equals(Decision.HIT) || decision.equals(Decision.STAND))) {
+    public void setHitOrStandDecision(int soft, int total, Card dealersCard, Decision decision) {
+        if ((soft == 1) && total < 11 || total < 4 || total > 22 || !(decision.equals(Decision.HIT) || decision.equals(Decision.STAND))) {
             throw new IllegalArgumentException();
         }
-        hitOrStand[soft ? 1 : 0][total][dealersCard.getValue()] = decision;
+        hitOrStand[soft][total][dealersCard.getValue()] = decision;
     }
 
     public void setIniHandDecision(Card ownCard1, Card ownCard2, Card dealersCard, Decision decision) {
