@@ -5,6 +5,8 @@
  */
 package bj.sim;
 
+import bj.sim.hands.Hand;
+
 /**
  *
  * @author vasil.kuzevski

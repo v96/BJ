@@ -5,6 +5,7 @@
  */
 package bj.sim;
 
+import bj.sim.hands.Hand;
 import java.text.DecimalFormat;
 
 /**
