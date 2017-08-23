@@ -19,23 +19,9 @@ public abstract class PlayerFinalHand extends PlayerHand {
         throw new IllegalArgumentException();
     }
     
+    public abstract double compareAgainstDealer(DealerFinalHand dealer);
+    
     protected PlayerFinalHand(Rules rules) {
         super(rules);
-    }
-    
-    public double compareAgainstDealer(DealerFinalHand dealer) {
-        if (this instanceof SurrenderedHand) 
-            return -0.5;
-        else if (this instanceof PlayerBustedHand) 
-            return -1;
-        else if (this instanceof PlayerBlackjack) {
-            if(!(dealer instanceof DealerBlackjack))
-                return getRules().blackjackPayout();
-            else
-                return 0;
-        } else if (this instanceof DoubledDown) {
-            
-        }
-        throw new IllegalStateException();
     }
 }
