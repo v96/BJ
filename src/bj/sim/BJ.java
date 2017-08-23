@@ -6,9 +6,6 @@
 package bj.sim;
 
 import bj.sim.hands.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  *
@@ -21,23 +18,22 @@ public class BJ {
      */
     static int calls = 0, calculations = 0;
 
-    static Map<MapKey, Double> map = new HashMap<>();
+    static HandMap<Double> map;
 
     public static double EV(PlayerHand hand, DealerHand dealer) {
         calls++;
         //if (calls % 100000 == 0) {
-            System.out.println(calls + " " + calculations);
+        System.out.println(calls + " " + calculations);
         //}
 
-        MapKey key = new MapKey(hand, dealer);
-        if (map.containsKey(key)) {
-            return map.get(key);
+        if (map.contains(hand, dealer)) {
+            return map.get(hand, dealer);
         }
         calculations++;
-        
+
         if (hand instanceof PlayerFinalHand && dealer instanceof DealerFinalHand) {
-            map.put(key, ((PlayerFinalHand) hand).compare((DealerFinalHand) dealer));
-            return map.get(key);
+            map.put(hand, dealer, ((PlayerFinalHand) hand).compare((DealerFinalHand) dealer));
+            return map.get(hand, dealer);
         }
         if (hand instanceof PlayerFinalHand) {
             double ev = 0;
@@ -45,13 +41,13 @@ public class BJ {
                 ev += (1 / (double) 13) * EV(hand, (DealerHand) dealer.applyAction(Action.HIT, i));
             }
             ev += (4 / (double) 13) * EV(hand, (DealerHand) dealer.applyAction(Action.HIT, 10));
-            map.put(key, ev);
-            return map.get(key);
+            map.put(hand, dealer, ev);
+            return map.get(hand, dealer);
         }
         double bestEV = Double.NEGATIVE_INFINITY;
         for (Action action : hand.availableActions()) {
             double ev = 0;
-            if(action == Action.HIT || action == Action.DOUBLEDOWN) {
+            if (action == Action.HIT || action == Action.DOUBLEDOWN) {
                 for (int i = 1; i <= 9; i++) {
                     ev += (1 / (double) 13) * EV((PlayerHand) hand.applyAction(action, i), dealer);
                 }
@@ -61,14 +57,15 @@ public class BJ {
             }
             bestEV = Math.max(bestEV, ev);
         }
-        map.put(key, bestEV);
-        return map.get(key);
+        map.put(hand, dealer, bestEV);
+        return map.get(hand, dealer);
     }
 
     public static void main(String[] args) {
-
+        map = new HandMap();
         Rules rules = new Rules();
-        System.out.println(EV(new PlayerEmpty(rules), new DealerEmpty(rules)));
+        System.out.println(EV((PlayerHand) (new PlayerEmpty(rules)).applyAction(Action.HIT, 10),
+                (DealerHand) (((new DealerEmpty(rules)).applyAction(Action.HIT, 6)).applyAction(Action.HIT, 1)).applyAction(Action.HIT, 2)));
 //        StrategyStats hit17 = new StrategyStats(Strategy.HIT_TO_17, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
 //        StrategyStats alwaysStand = new StrategyStats(Strategy.ALWAYS_STAND, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
 //        StrategyStats alwaysDD = new StrategyStats(Strategy.ALWAYS_DOUBLEDOWN, CardDistribution.INFINITE_DECK, Rules.LE_GRAND);
@@ -82,45 +79,4 @@ public class BJ {
 //        System.out.println(alwaysDD.getTotalEV());
 //        System.out.println(neverBust18.getTotalEV());
     }
-
-    private static class MapKey {
-
-        private final PlayerHand hand;
-        private final DealerHand dealer;
-
-        @Override
-        public int hashCode() {
-            int hash = 5;
-            hash = 79 * hash + this.hand.hashCode();
-            hash = 79 * hash + this.dealer.hashCode();
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final MapKey other = (MapKey) obj;
-            if (!this.hand.equals(other.hand)) {
-                return false;
-            }
-            if (!this.dealer.equals(other.dealer)) {
-                return false;
-            }
-            return true;
-        }
-        
-        public MapKey(PlayerHand hand, DealerHand dealer) {
-            this.hand = hand;
-            this.dealer = dealer;
-        }
-    }
-
 }
