@@ -11,7 +11,7 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class Dealer17To21 extends DealerFinalHand {
+class Dealer17To21 extends DealerFinalHand {
     
     private final int total;
     

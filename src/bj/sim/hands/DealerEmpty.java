@@ -14,11 +14,11 @@ import bj.sim.Rules;
  */
 public class DealerEmpty extends DealerMustHit {
     
-    public Hand applyAction(Action action, int card) {
+    public DealerHand applyAction(Action action, int card) {
         switch(action) {
             case HIT:
                 checkCard(card);
-                return new DealerSingleCard(getRules(), card);
+                return new Dealer1Card(getRules(), card);
             default:
                 throw new IllegalArgumentException();
         }
@@ -36,5 +36,9 @@ public class DealerEmpty extends DealerMustHit {
     
     public DealerEmpty(Rules rules) {
         super(rules);
+    }
+    
+    public DealerEmpty() {
+        this(new Rules());
     }
 }

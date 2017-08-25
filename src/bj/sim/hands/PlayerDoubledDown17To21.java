@@ -12,7 +12,7 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerDoubledDown17To21 extends Player17To21 {
+class PlayerDoubledDown17To21 extends Player17To21 {
     
     public double compare(DealerFinalHand dealer) {
         return 2 * super.compare(dealer);

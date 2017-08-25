@@ -5,6 +5,7 @@
  */
 package bj.sim.hands;
 
+import bj.sim.Action;
 import bj.sim.Rules;
 
 /**
@@ -13,7 +14,32 @@ import bj.sim.Rules;
  */
 public abstract class DealerHand extends Hand {
     
-    protected DealerHand(Rules rules) {
+    public abstract DealerHand applyAction(Action action, int card);
+    
+    public DealerHand applyAction(Action action) {
+        if(action == Action.HIT || action == Action.DOUBLEDOWN) {
+            throw new IllegalArgumentException();
+        }
+        return applyAction(action, 0);
+    }
+    
+    public DealerHand hit(int card) {
+        return applyAction(Action.HIT, card);
+    }
+    
+    public boolean isFinal() {
+        return false;
+    }
+    
+    public boolean isBlackjack() {
+        return this instanceof DealerBlackjack;
+    }
+    
+    public boolean isEmpty() {
+        return this instanceof DealerEmpty;
+    }
+    
+    DealerHand(Rules rules) {
         super(rules);
     }
 }

@@ -11,7 +11,7 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class Player17To21 extends PlayerFinalHand {
+class Player17To21 extends PlayerFinalHand {
 
     private final int total;
 
@@ -22,7 +22,7 @@ public class Player17To21 extends PlayerFinalHand {
     public double compare(DealerFinalHand dealer) {
         if (dealer instanceof DealerBusted) {
             return 1;
-        } else if (dealer instanceof DealerBlackjack) {
+        } else if (dealer.isBlackjack()) {
             return -1;
         } else {
             if(total > ((Dealer17To21) dealer).getTotal())

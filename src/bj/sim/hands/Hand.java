@@ -12,7 +12,7 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public abstract class Hand {
+abstract class Hand {
     
     private final Rules rules;
     
@@ -22,7 +22,7 @@ public abstract class Hand {
         }
     }
     
-    protected static int getTotal(int total, boolean soft, int card) {
+    protected static int newTotal(int total, boolean soft, int card) {
         checkCard(card);
         
         if(card == 1 && total <= 10) {
@@ -36,7 +36,7 @@ public abstract class Hand {
         }
     }
     
-    protected static boolean isSoft(int total, boolean soft, int card) {
+    protected static boolean newSoft(int total, boolean soft, int card) {
         checkCard(card);
         
         if(card == 1 && total <= 10)
@@ -47,9 +47,13 @@ public abstract class Hand {
     }
 
     public abstract Action[] availableActions();
-
-    public abstract Hand applyAction(Action action, int card);
-
+    
+    public abstract boolean isFinal();
+    
+    public abstract boolean isBlackjack();
+    
+    public abstract boolean isEmpty();
+    
     public Rules getRules() {
         return rules;
     }

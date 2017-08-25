@@ -12,24 +12,21 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerHitOrStand extends PlayerHand {
+class PlayerHitOrStand extends PlayerHand {
 
     private final int total;
     private final boolean soft;
 
     public Action[] availableActions() {
-        Action[] avail = new Action[2];
-        avail[0] = Action.HIT;
-        avail[1] = Action.STAND;
-        return avail;
+        return new Action[] {Action.HIT, Action.STAND};
     }
 
-    public Hand applyAction(Action action, int card) {
+    public PlayerHand applyAction(Action action, int card) {
         switch (action) {
             case HIT:
                 checkCard(card);
-                int newTotal = getTotal(total, soft, card);
-                boolean newSoft = isSoft(total, soft, card);
+                int newTotal = newTotal(total, soft, card);
+                boolean newSoft = newSoft(total, soft, card);
                 if (newTotal < 22)
                     return new PlayerHitOrStand(getRules(), newTotal, newSoft);
                 return new PlayerBusted(getRules());

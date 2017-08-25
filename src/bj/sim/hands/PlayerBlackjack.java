@@ -11,10 +11,10 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerBlackjack extends PlayerFinalHand {
+class PlayerBlackjack extends PlayerFinalHand {
     
     public double compare(DealerFinalHand dealer) {
-        if(dealer instanceof DealerBlackjack)
+        if(dealer.isBlackjack())
             return 0;
         return getRules().blackjackPayout;
     }

@@ -11,7 +11,7 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerUnder17 extends PlayerFinalHand {
+class PlayerUnder17 extends PlayerFinalHand {
 
     public double compare(DealerFinalHand dealer) {
         if (dealer instanceof DealerBusted) {

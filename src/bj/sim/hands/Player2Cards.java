@@ -12,26 +12,21 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerInitial extends PlayerHand {
+class Player2Cards extends PlayerHand {
 
-    protected final int total;
-    protected final boolean soft;
+    private final int total;
+    private final boolean soft;
 
     public Action[] availableActions() {
-        Action[] avail = new Action[4];
-        avail[0] = Action.HIT;
-        avail[1] = Action.STAND;
-        avail[2] = Action.DOUBLEDOWN;
-        avail[3] = Action.SURRENDER;
-        return avail;
+        return new Action[] {Action.HIT, Action.STAND, Action.DOUBLEDOWN, Action.SURRENDER};
     }
 
-    public Hand applyAction(Action action, int card) {
+    public PlayerHand applyAction(Action action, int card) {
         switch (action) {
             case HIT: {
                 checkCard(card);
-                int newTotal = getTotal(total, soft, card);
-                boolean newSoft = isSoft(total, soft, card);
+                int newTotal = newTotal(total, soft, card);
+                boolean newSoft = newSoft(total, soft, card);
                 if (newTotal < 22)
                     return new PlayerHitOrStand(getRules(), newTotal, newSoft);
                 return new PlayerBusted(getRules());
@@ -43,7 +38,7 @@ public class PlayerInitial extends PlayerHand {
                 return new Player17To21(getRules(), total);
             case DOUBLEDOWN: {
                 checkCard(card);
-                int newTotal = getTotal(total, soft, card);
+                int newTotal = newTotal(total, soft, card);
                 if (newTotal < 17) {
                     return new PlayerDoubledDownUnder17(getRules());
                 } else if (newTotal >= 17 && newTotal <= 21) {
@@ -58,10 +53,11 @@ public class PlayerInitial extends PlayerHand {
         }
     }
     
-    public int getTotal(){
+    protected int getTotal(){
         return total;
     }
-    public boolean isSoft() {
+    
+    protected boolean isSoft() {
         return soft;
     }
 
@@ -84,7 +80,7 @@ public class PlayerInitial extends PlayerHand {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PlayerInitial other = (PlayerInitial) obj;
+        final Player2Cards other = (Player2Cards) obj;
         if (this.total != other.total) {
             return false;
         }
@@ -94,7 +90,7 @@ public class PlayerInitial extends PlayerHand {
         return true;
     }
 
-    PlayerInitial(Rules rules, int total, boolean soft) {
+    Player2Cards(Rules rules, int total, boolean soft) {
         super(rules);
         this.total = total;
         this.soft = soft;

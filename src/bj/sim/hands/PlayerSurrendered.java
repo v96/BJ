@@ -11,9 +11,11 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerSurrendered extends PlayerFinalHand {
+class PlayerSurrendered extends PlayerFinalHand {
     
     public double compare(DealerFinalHand dealer) {
+        if(dealer.isBlackjack())
+            return -1;
         return -0.5;
     }
     

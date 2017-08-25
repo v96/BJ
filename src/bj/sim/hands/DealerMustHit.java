@@ -12,17 +12,15 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public abstract class DealerMustHit extends DealerHand {
+abstract class DealerMustHit extends DealerHand {
     
     public Action[] availableActions() {
-        Action[] avail = new Action[1];
-        avail[0] = Action.HIT;
-        return avail;
+        return new Action[] {Action.HIT};
     }
     
-    public abstract Hand applyAction(Action action, int card);
+    public abstract DealerHand applyAction(Action action, int card);
     
-    protected DealerMustHit(Rules rules) {
+    DealerMustHit(Rules rules) {
         super(rules);
     }
     

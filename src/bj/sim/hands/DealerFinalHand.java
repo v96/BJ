@@ -12,18 +12,21 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public abstract class DealerFinalHand extends DealerHand {
+abstract class DealerFinalHand extends DealerHand {
     
     public Action[] availableActions() {
-        Action[] avail = new Action[0];
-        return avail;
+        return new Action[] {};
     }
     
-    public Hand applyAction(Action action, int card) {
+    public DealerHand applyAction(Action action, int card) {
         throw new IllegalArgumentException();
     }
     
-    protected DealerFinalHand(Rules rules) {
+    public boolean isFinal() {
+        return true;
+    }
+    
+    DealerFinalHand(Rules rules) {
         super(rules);
     }
 }

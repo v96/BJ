@@ -15,16 +15,14 @@ import bj.sim.Rules;
 public class PlayerEmpty extends PlayerHand {
 
     public Action[] availableActions() {
-        Action[] avail = new Action[1];
-        avail[0] = Action.HIT;
-        return avail;
+        return new Action[] {Action.HIT};
     }
 
-    public Hand applyAction(Action action, int card) {
+    public PlayerHand applyAction(Action action, int card) {
         switch (action) {
             case HIT:
                 checkCard(card);
-                return new PlayerSingleCard(getRules(), card);
+                return new Player1Card(getRules(), card);
             default:
                 throw new IllegalArgumentException();
         }
@@ -42,6 +40,10 @@ public class PlayerEmpty extends PlayerHand {
 
     public PlayerEmpty(Rules rules) {
         super(rules);
+    }
+    
+    public PlayerEmpty() {
+        this(new Rules());
     }
 
 }

@@ -12,17 +12,19 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerSingleCard extends PlayerHand {
+class Player1Card extends PlayerHand {
 
-    protected final int card;
+    private final int card;
 
     public Action[] availableActions() {
-        Action[] avail = new Action[1];
-        avail[0] = Action.HIT;
-        return avail;
+        return new Action[] {Action.HIT};
+    }
+    
+    protected int getCard() {
+        return card;
     }
 
-    public Hand applyAction(Action action, int card) {
+    public PlayerHand applyAction(Action action, int card) {
         switch (action) {
             case HIT:
                 checkCard(card);
@@ -30,9 +32,9 @@ public class PlayerSingleCard extends PlayerHand {
                     return new PlayerBlackjack(getRules());
                 if(this.card == card) 
                     return new PlayerInitialPair(getRules(), card);
-                int newTotal = getTotal(this.card == 1 ? 11 : this.card, this.card == 1, card);
-                boolean newSoft = isSoft(this.card == 1 ? 11 : this.card, this.card == 1, card);
-                return new PlayerInitial(getRules(), newTotal, newSoft);
+                int newTotal = newTotal(this.card == 1 ? 11 : this.card, this.card == 1, card);
+                boolean newSoft = newSoft(this.card == 1 ? 11 : this.card, this.card == 1, card);
+                return new Player2Cards(getRules(), newTotal, newSoft);
             default:
                 throw new IllegalArgumentException();
         }
@@ -56,14 +58,14 @@ public class PlayerSingleCard extends PlayerHand {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PlayerSingleCard other = (PlayerSingleCard) obj;
+        final Player1Card other = (Player1Card) obj;
         if (this.card != other.card) {
             return false;
         }
         return true;
     }
 
-    PlayerSingleCard(Rules rules, int card) {
+    Player1Card(Rules rules, int card) {
         super(rules);
         this.card = card;
     }

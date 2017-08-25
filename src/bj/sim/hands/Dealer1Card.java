@@ -12,25 +12,32 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerSplitSingleCard extends PlayerSingleCard {
+class Dealer1Card extends DealerMustHit {
     
-    public Hand applyAction(Action action, int card) {
+    private final int card;
+    
+    public DealerHand applyAction(Action action, int card) {
         switch (action) {
             case HIT:
                 checkCard(card);
-                if(this.card == card) 
-                    return new PlayerSplitPair(getRules(), card);
-                int newTotal = getTotal(this.card == 1 ? 11 : this.card, this.card == 1, card);
-                boolean newSoft = isSoft(this.card == 1 ? 11 : this.card, this.card == 1, card);
-                return new PlayerSplitInitial(getRules(), newTotal, newSoft);
+                if((this.card == 1 && card == 10) || (this.card == 10 && card == 1))
+                    return new DealerBlackjack(getRules());
+                int newTotal = newTotal(this.card == 1 ? 11 : this.card, this.card == 1, card);
+                boolean newSoft = newSoft(this.card == 1 ? 11 : this.card, this.card == 1, card);
+                if(newTotal >= 17) {
+                    return new Dealer17To21(getRules(), newTotal);
+                } 
+                return new DealerUnder17(getRules(), newTotal, newSoft);
             default:
                 throw new IllegalArgumentException();
         }
     }
-    
+
     @Override
     public int hashCode() {
-        return 21163 * this.card;
+        int hash = 7;
+        hash = 29 * hash + this.card;
+        return hash;
     }
 
     @Override
@@ -44,14 +51,15 @@ public class PlayerSplitSingleCard extends PlayerSingleCard {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PlayerSplitSingleCard other = (PlayerSplitSingleCard) obj;
+        final Dealer1Card other = (Dealer1Card) obj;
         if (this.card != other.card) {
             return false;
         }
         return true;
     }
     
-    PlayerSplitSingleCard(Rules rules, int card) {
-        super(rules, card);
+    Dealer1Card(Rules rules, int card) {
+        super(rules);
+        this.card = card;
     }
 }

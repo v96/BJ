@@ -12,19 +12,18 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class PlayerInitialPair extends PlayerInitial {
+class PlayerInitialPair extends Player2Cards {
     
     private final int card;
     
     public Action[] availableActions() {
-        return new Action[] {Action.HIT, Action.STAND, Action.DOUBLEDOWN, Action.SURRENDER};
+        return new Action[] {Action.HIT, Action.STAND, Action.DOUBLEDOWN, Action.SURRENDER, Action.SPLIT};
     }
     
-    public Hand applyAction(Action action, int card) {
+    public PlayerHand applyAction(Action action, int card) {
         switch (action) {
             case SPLIT:
-                throw new IllegalArgumentException();
-                //return new PlayerSplitSingleCard(getRules(), card);
+                return new PlayerSplit1Card(getRules(), this.card);
             default:
                 return super.applyAction(action, card);
         }

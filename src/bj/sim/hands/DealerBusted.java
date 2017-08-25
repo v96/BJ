@@ -11,7 +11,7 @@ import bj.sim.Rules;
  *
  * @author vasil.kuzevski
  */
-public class DealerBusted extends DealerFinalHand {
+class DealerBusted extends DealerFinalHand {
     
     @Override
     public boolean equals(Object obj) {
