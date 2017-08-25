@@ -12,7 +12,7 @@ package bj.sim;
 public enum Action {
     HIT,
     STAND,
-    SURRENDER,
     DOUBLEDOWN,
-    SPLIT
+    SPLIT,
+    SURRENDER,
 }

@@ -5,8 +5,6 @@
  */
 package bj.sim;
 
-import bj.sim.hands.Hand;
-
 /**
  *
  * @author vasil.kuzevski
@@ -44,9 +42,14 @@ public class Rules {
 //        return hand.getTotal() < 17 || (hand.getTotal() == 17 && hand.isSoft() && !dealerStandsOnSoft17);
 //    }
     public final boolean dealerStandsOnSoft17;
+    public final boolean doubleAfterSplitAllowed;
+    public final boolean canHitSplitAces;
     public final double blackjackPayout;
-    Rules() {
+    
+    public Rules() {
         dealerStandsOnSoft17 = true;
+        doubleAfterSplitAllowed = true;
+        canHitSplitAces = false;
         blackjackPayout = 1.5;
     }
 }
